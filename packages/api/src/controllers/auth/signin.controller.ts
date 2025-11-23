@@ -1,6 +1,6 @@
 import z from "zod";
-import { signinSchema } from "../../schema/auth.schema";
-import { Context } from "../../../../../apps/server/src/context";
+import { signinSchema } from "../../schema/auth/auth.schema";
+import { Context } from "../../context";
 import { signInUser } from "../../services/auth/signin.service";
 
 export async function SigninController(

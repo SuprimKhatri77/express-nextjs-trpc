@@ -1,10 +1,11 @@
-import { createContext } from "./context";
+import { db } from "./db/index";
 import express from "express";
 import cors from "cors";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { appRouter } from "../../../packages/api/src/index";
-import { toNodeHandler } from "better-auth/node";
+import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
 import { auth } from "./lib/auth";
+import { createContextFactory } from "../../../packages/api/src/context";
 
 const app = express();
 
@@ -19,11 +20,11 @@ app.use(
 app.all("/api/auth/*splat", toNodeHandler(auth));
 app.use(express.json());
 
-// Traditional REST routes (if you still need them)
-// import authRoutes from './routes/auth.routes';
-// app.use('/api/auth', authRoutes);
-
-// tRPC endpoint
+const createContext = createContextFactory({
+  db,
+  auth,
+  fromNodeHeaders,
+});
 app.use(
   "/trpc",
   createExpressMiddleware({

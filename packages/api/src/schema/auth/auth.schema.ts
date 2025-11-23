@@ -10,3 +10,11 @@ export const signinSchema = z.object({
   email: z.email().nonempty(),
   password: z.string().trim().nonempty(),
 });
+
+export const verifyEmailSchema = z.object({
+  token: z.string(),
+});
+
+export const resendVerificationEmailSchema = z.object({
+  email: z.email().nonempty(),
+});

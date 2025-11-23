@@ -1,4 +1,4 @@
-import { Context } from "../../../apps/server/src/context";
+import { Context } from "./context";
 import { initTRPC, TRPCError } from "@trpc/server";
 
 type ProtectedContext = Context & {

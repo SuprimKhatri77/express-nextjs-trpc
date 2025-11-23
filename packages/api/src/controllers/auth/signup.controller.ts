@@ -1,7 +1,7 @@
-import { signupSchema } from "./../../schema/auth.schema";
+import { signupSchema } from "../../schema/auth/auth.schema";
 import z from "zod";
 import { signupUser } from "../../services/auth/signup.service";
-import { Context } from "../../../../../apps/server/src/context";
+import { Context } from "../../context";
 import { TRPCError } from "@trpc/server";
 import { SignupResponse } from "../../types/auth.types";
 
