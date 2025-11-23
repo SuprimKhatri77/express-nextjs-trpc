@@ -1,6 +1,6 @@
 import { auth } from "./../../../../../apps/server/src/lib/auth";
 import { z } from "zod";
-import { signupSchema } from "../../schema/auth.schema";
+import { signupSchema } from "../../schema/auth/auth.schema";
 import { SignupResponse } from "../../types/auth.types";
 
 export type SignupInput = z.infer<typeof signupSchema>;
@@ -38,10 +38,13 @@ export async function signupUser(input: SignupInput): Promise<SignupResponse> {
       returnHeaders: true,
     });
     const setCookieHeader = repsonseHeaders.get("set-cookie") || "";
+
     return {
       success: true,
       message: "Signed up successfully.",
-      redirectTo: "/dashboard",
+      redirectTo: `/verify-email?from=${encodeURIComponent(
+        "signup"
+      )}&context=${encodeURIComponent("verify email")}`,
       cookies: setCookieHeader,
     };
   } catch (error: any) {

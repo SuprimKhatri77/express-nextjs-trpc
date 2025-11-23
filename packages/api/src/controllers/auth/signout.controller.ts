@@ -1,5 +1,5 @@
 import { fromNodeHeaders } from "better-auth/node";
-import { Context } from "../../../../../apps/server/src/context";
+import { Context } from "../../context";
 import { signOutUser } from "../../services/auth/signout.service";
 import { SignoutResponse } from "../../types/auth.types";
 

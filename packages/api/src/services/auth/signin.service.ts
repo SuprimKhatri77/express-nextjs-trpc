@@ -1,7 +1,7 @@
 import z from "zod";
-import { signinSchema } from "../../schema/auth.schema";
+import { signinSchema } from "../../schema/auth/auth.schema";
 import { SigninResponse } from "../../types/auth.types";
-import { Context } from "../../../../../apps/server/src/context";
+import { Context } from "../../context";
 import { auth } from "../../../../../apps/server/src/lib/auth";
 import { APIError } from "better-auth/api";
 

@@ -53,6 +53,34 @@ export const signoutResponseSchema = z.object({
   message: z.string(),
 });
 
+export const verifyEmailResponseSchema = z.object({
+  success: z.boolean().nonoptional(),
+  message: z.string().nonempty(),
+});
+
+export const resendVerificationEmailResponseSchema = z.object({
+  success: z.boolean().nonoptional(),
+  message: z.string().trim().nonempty(),
+  inputs: z
+    .object({
+      email: z.email(),
+    })
+    .optional(),
+  errors: z
+    .object({
+      properties: z
+        .object({
+          email: z.array(z.string()).optional(),
+        })
+        .optional(),
+    })
+    .optional(),
+});
+
 export type SignupResponse = z.infer<typeof signupResponseSchema>;
 export type SignoutResponse = z.infer<typeof signoutResponseSchema>;
 export type SigninResponse = z.infer<typeof signinResponseSchema>;
+export type VerifyEmailResponse = z.infer<typeof verifyEmailResponseSchema>;
+export type ResendVerificationEmailResponse = z.infer<
+  typeof resendVerificationEmailResponseSchema
+>;
