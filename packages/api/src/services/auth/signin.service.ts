@@ -40,7 +40,7 @@ export async function signInUser(input: SigninInput): Promise<SigninResponse> {
       success: true,
       message: "Logged in successfully.",
       cookies: setCookieHeader,
-      redirectTo: "/dashboard",
+      redirectTo: "/feed",
     };
   } catch (error) {
     console.log("error: ", error);

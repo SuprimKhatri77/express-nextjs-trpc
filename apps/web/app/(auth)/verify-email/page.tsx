@@ -1,5 +1,5 @@
 import VerifyEmail from "@/modules/auth/verify-email";
-import { trpcServer } from "@/trpc/trpc-server";
+import { getServerTrpc } from "@/trpc/trpc-server";
 import { redirect } from "next/navigation";
 
 type Props = {
@@ -12,7 +12,8 @@ type Props = {
 export default async function Page({ searchParams }: Props) {
   const { token, from, context } = await searchParams;
   if (!token && !from && !context) redirect("/");
-  const session = await trpcServer.auth.getUserSession.query();
+  const trpc = await getServerTrpc();
+  const session = await trpc.auth.getUserSession.query();
   if (!session) redirect("/login");
   return (
     <VerifyEmail

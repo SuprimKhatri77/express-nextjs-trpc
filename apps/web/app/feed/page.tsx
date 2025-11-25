@@ -1,9 +1,10 @@
 import { Dashboard } from "@/modules/feed/feed";
-import { trpcServer } from "@/trpc/trpc-server";
+import { getServerTrpc } from "@/trpc/trpc-server";
 import { redirect } from "next/navigation";
 
 export default async function Page() {
-  const session = await trpcServer.auth.getUserSession.query();
+  const trpc = await getServerTrpc();
+  const session = await trpc.auth.getUserSession.query();
   console.log("session: ", session);
   if (!session) redirect("/login");
   if (!session.user.emailVerified)

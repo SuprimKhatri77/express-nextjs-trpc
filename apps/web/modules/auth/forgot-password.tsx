@@ -10,18 +10,45 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
+import { trpc } from "@/utils/trpc";
+import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 
-// Forgot Password Component
 export function ForgotPassword() {
   const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const { mutate, isPending, reset } =
+    trpc.auth.sendResetPasswordLink.useMutation({
+      onSuccess: (result) => {
+        if (!result.success) {
+          toast.error(result.message);
+          reset();
+          return;
+        }
+        toast.success(result.message);
+        setEmail("");
+        reset();
+      },
+      onError: (error) => {
+        if (error.data?.code === "BAD_REQUEST") {
+          try {
+            const validationErrors = JSON.parse(error.message);
+            const firstError = validationErrors[0];
+            const errorMessage = firstError?.message || "Invalid input";
+            toast.error(errorMessage);
+          } catch {
+            toast.error(error.message);
+          }
+        } else {
+          toast.error(error.message);
+        }
+      },
+    });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
-    // Backend logic would go here
-    setTimeout(() => setIsLoading(false), 2000);
+    mutate({ email });
   };
 
   return (
@@ -75,10 +102,10 @@ export function ForgotPassword() {
 
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={isPending}
                 className="w-full bg-black hover:bg-gray-800 text-white font-semibold rounded-xl h-12 sm:h-14 text-base transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
               >
-                {isLoading ? (
+                {isPending ? (
                   <span className="flex items-center gap-2">
                     <Spinner className="w-5 h-5" />
                     <span>Sending...</span>
@@ -89,11 +116,9 @@ export function ForgotPassword() {
               </Button>
 
               <div className="text-center pt-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="text-sm text-gray-600 hover:text-black font-medium transition-colors"
-                  onClick={() => window.history.back()}
+                <Link
+                  href="/login"
+                  className="text-sm flex items-center gap-2 w-full text-gray-600 hover:text-black font-medium transition-colors hover:bg-accent  dark:hover:bg-accent/50 h-9 px-4 py-2 justify-center rounded-md"
                 >
                   <svg
                     className="w-4 h-4 mr-2"
@@ -109,7 +134,7 @@ export function ForgotPassword() {
                     />
                   </svg>
                   Back to login
-                </Button>
+                </Link>
               </div>
             </form>
           </CardContent>
@@ -117,9 +142,12 @@ export function ForgotPassword() {
 
         <p className="text-center text-sm text-gray-500 mt-6 px-4">
           Remember your password?{" "}
-          <button className="font-semibold text-black hover:underline">
+          <Link
+            href="/login"
+            className="font-semibold text-black hover:underline"
+          >
             Sign in
-          </button>
+          </Link>
         </p>
       </div>
     </div>

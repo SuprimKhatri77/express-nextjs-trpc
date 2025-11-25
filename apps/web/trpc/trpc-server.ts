@@ -17,5 +17,3 @@ export async function getServerTrpc() {
 
   return trpc;
 }
-
-export const trpcServer = await getServerTrpc();

@@ -11,18 +11,52 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
+import { trpc } from "@/utils/trpc";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
-export function ResetPassword() {
+type Props = {
+  token: string;
+};
+export function ResetPassword({ token }: Props) {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{
     newPassword?: string;
     confirmPassword?: string;
   }>({});
+  const router = useRouter();
+
+  const { mutate, isPending, reset } = trpc.auth.resetPassword.useMutation({
+    onSuccess: (result) => {
+      if (!result.success) {
+        toast.error(result.message);
+        reset();
+        return;
+      }
+      toast.success(result.message);
+      router.push(result.redirectTo as string);
+      reset();
+    },
+
+    onError: (error) => {
+      if (error.data?.code === "BAD_REQUEST") {
+        try {
+          const validationErrors = JSON.parse(error.message);
+          const firstError = validationErrors[0];
+          const errorMessage = firstError.message || "Invalid input.";
+          toast.error(errorMessage);
+        } catch {
+          toast.error("Something went wrong.");
+        }
+      } else {
+        toast.error("Something went wrong.");
+      }
+    },
+  });
 
   const validatePassword = (password: string) => {
     if (password.length < 8) {
@@ -55,9 +89,7 @@ export function ResetPassword() {
       return;
     }
 
-    setIsLoading(true);
-    // Backend logic would go here
-    setTimeout(() => setIsLoading(false), 2000);
+    mutate({ token, newPassword });
   };
 
   const passwordStrength = (password: string) => {
@@ -347,10 +379,10 @@ export function ResetPassword() {
 
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={isPending}
                 className="w-full bg-black hover:bg-gray-800 text-white font-semibold rounded-xl h-12 sm:h-14 text-base transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
               >
-                {isLoading ? (
+                {isPending ? (
                   <span className="flex items-center gap-2">
                     <Spinner className="w-5 h-5" />
                     <span>Resetting password...</span>

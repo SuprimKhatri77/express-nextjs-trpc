@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Spinner } from "./ui/spinner";
+import { SignupResponse } from "../../../packages/api/src/types/auth.types";
 
 export function SignupForm({
   className,
@@ -28,14 +29,12 @@ export function SignupForm({
     password: "",
   });
   const router = useRouter();
-  const [errors, setErrors] = useState<Record<string, string[]>>({});
+  const [response, setResponse] = useState<SignupResponse>();
   const { mutate, isPending, reset } = trpc.auth.signup.useMutation({
     onSuccess: (result) => {
       if (!result.success) {
         toast.error(result.message);
-        if (result.errors?.properties) {
-          setErrors(result.errors.properties);
-        }
+        setResponse(result);
         reset();
         return;
       }
@@ -77,7 +76,9 @@ export function SignupForm({
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             required
           />
-          {errors.name && <FieldError>{errors.name[0]}</FieldError>}
+          {response?.errors?.properties?.name && (
+            <FieldError>{response.errors.properties.name[0]}</FieldError>
+          )}
         </Field>
         <Field>
           <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -91,7 +92,9 @@ export function SignupForm({
             }
             required
           />
-          {errors.email && <FieldError>{errors.email[0]}</FieldError>}
+          {response?.errors?.properties?.email && (
+            <FieldError>{response.errors.properties.email[0]}</FieldError>
+          )}
           <FieldDescription>
             We&apos;ll use this to contact you. We will not share your email
             with anyone else.
@@ -108,17 +111,15 @@ export function SignupForm({
             }
             required
           />
-          {errors.password && <FieldError>{errors.password[0]}</FieldError>}
+          {response?.errors?.properties?.password && (
+            <FieldError>{response.errors.properties.password[0]}</FieldError>
+          )}
 
           <FieldDescription>
             Must be at least 8 characters long.
           </FieldDescription>
         </Field>
-        {/* <Field>
-          <FieldLabel htmlFor="confirm-password">Confirm Password</FieldLabel>
-          <Input id="confirm-password" type="password" required />
-          <FieldDescription>Please confirm your password.</FieldDescription>
-        </Field> */}
+
         <Field>
           <Button type="submit" disabled={isPending}>
             {isPending ? <Spinner /> : "Create Account"}
