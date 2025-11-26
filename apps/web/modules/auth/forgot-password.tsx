@@ -34,9 +34,16 @@ export function ForgotPassword() {
         if (error.data?.code === "BAD_REQUEST") {
           try {
             const validationErrors = JSON.parse(error.message);
-            const firstError = validationErrors[0];
-            const errorMessage = firstError?.message || "Invalid input";
-            toast.error(errorMessage);
+            if (
+              Array.isArray(validationErrors) &&
+              validationErrors.length > 0
+            ) {
+              const errorMessage =
+                validationErrors[0]?.message || "Invalid input.";
+              toast.error(errorMessage);
+            } else {
+              toast.error("Invalid Input");
+            }
           } catch {
             toast.error(error.message);
           }

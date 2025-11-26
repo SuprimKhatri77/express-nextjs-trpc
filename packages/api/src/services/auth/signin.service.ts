@@ -4,15 +4,16 @@ import { SigninResponse } from "../../types/auth.types";
 import { Context } from "../../context";
 import { auth } from "../../../../../apps/server/src/lib/auth";
 import { APIError } from "better-auth/api";
+import { checkRateLimit } from "../../middleware/rate-limit";
 
 export type SigninInput = z.infer<typeof signinSchema>;
 export async function signInUser(input: SigninInput): Promise<SigninResponse> {
-  const validateFileds = signinSchema.safeParse({
+  const validateFields = signinSchema.safeParse({
     email: input.email,
     password: input.password,
   });
-  if (!validateFileds.success) {
-    const tree = z.treeifyError(validateFileds.error).properties;
+  if (!validateFields.success) {
+    const tree = z.treeifyError(validateFields.error).properties;
     return {
       success: false,
       message: "Validation failed",
@@ -26,7 +27,8 @@ export async function signInUser(input: SigninInput): Promise<SigninResponse> {
     };
   }
 
-  const { email, password } = validateFileds.data;
+  const { email, password } = validateFields.data;
+
   try {
     const { headers: responseHeaders } = await auth.api.signInEmail({
       body: {
