@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { Dashboard } from "@/modules/feed/feed";
 import { getServerTrpc } from "@/trpc/trpc-server";
 import { redirect } from "next/navigation";
