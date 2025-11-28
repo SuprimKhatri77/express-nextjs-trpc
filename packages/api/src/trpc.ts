@@ -24,4 +24,4 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
       userId: ctx.userId,
     } as ProtectedContext,
   });
-});
+}) as typeof t.procedure;
