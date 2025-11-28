@@ -47,7 +47,9 @@ async function startServer() {
 
     // Start listening
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(`📡 tRPC endpoint: http://localhost:${PORT}/trpc`);
+      console.log(`🔐 Auth endpoint: http://localhost:${PORT}/api/auth`);
     });
   } catch (error) {
     console.error("❌ Failed to start server:", error);
@@ -70,9 +72,3 @@ process.on("SIGTERM", async () => {
 
 // Start the server
 startServer();
-
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📡 tRPC endpoint: http://localhost:${PORT}/trpc`);
-  console.log(`🔐 Auth endpoint: http://localhost:${PORT}/api/auth`);
-});
